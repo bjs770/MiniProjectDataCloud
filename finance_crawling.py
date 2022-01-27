@@ -116,6 +116,51 @@ def get_thema_list(soup):
             break;
         i = i + 1
     return link_list
+
+# 테마 이름, 전일대비증감율, 최근 3일 등락율
+def get_theme_info():
+    driver = webdriver.Chrome('chromedriver')
+
+    # 크롬으로 네이버 테마별 시세 페이지 접속
+    driver.get("https://finance.naver.com/sise/theme.naver")
+
+    # 현재 페이지 소스 얻어오기
+    html = driver.page_source
+    soup = BeautifulSoup(html, 'html.parser')
+
+    thema_title = []
+    list1 = []
+    list2 = []
+    
+    i = 0
+    for item in soup.select('table.type_1 > tbody > tr > td.col_type1'):
+        str = item.get_text()
+        thema_title.append(str)
+        if(i == 4):
+            break
+        i = i + 1
+        
+    i = 0
+    for item in soup.select('table.type_1 > tbody > tr > td.number.col_type2 > span'):
+        str = item.get_text().replace('\n', '').replace('\t', '').replace('%', '')
+        list1.append(str)
+        if(i == 4):
+            break
+        i = i + 1
+    
+    i = 0
+    for item in soup.select('table.type_1 > tbody > tr > td.number.col_type3 > span'):
+        str = item.get_text().replace('\n', '').replace('\t', '').replace('%', '')
+        list2.append(str)
+        if(i == 4):
+            break
+        i = i + 1
+        
+    thema_df = pd.DataFrame({'테마명': thema_title, '전일대비': list1, '최근 3일 등락률': list2})
+    # print(thema_df)
+    
+    # 일단 df로 반환
+    return thema_df
         
     
 # obj -> float
@@ -190,7 +235,7 @@ def crawling():
         data.drop(columns=['전일비', '등락률'], inplace=True)
         df = pd.concat([df, data])
 
-        time.sleep(3)
+        time.sleep(1.5)
 
     df.dropna(how='any', inplace=True)
     df = obj_to_float(df)
@@ -200,3 +245,8 @@ def crawling():
     
     return df
 
+# thema_df = get_theme_info()
+# df = crawling()
+
+# print(thema_df)
+# print(df)
