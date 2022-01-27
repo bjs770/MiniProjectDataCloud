@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[70]:
 
 
 import matplotlib.pyplot as plt
@@ -186,10 +186,9 @@ def total(score_df):
     plt.savefig('./imgs/total.png')
     plt.show()
     
-    
-    return score_df['종목명'][0]
+    return score_df[:6]
 
-def drawdata(testdata):
+def drawdata(data):
 
     font_location = "c:/Windows/fonts/malgun.ttf"
     font_name = font_manager.FontProperties(fname=font_location).get_name()
@@ -199,18 +198,35 @@ def drawdata(testdata):
     get_ipython().run_line_magic('matplotlib', 'inline')
 
     global score_df
-    score = [0 for i in range(len(testdata))]
+    score = [0 for i in range(len(data))]
     score_df = pd.DataFrame({
-            '종목명': testdata['종목명'],
+            '종목명': data['종목명'],
             'score': score
             })
     
     if not(os.path.isdir("./imgs")):
         os.mkdir("imgs")
-    per(testdata)
-    eps(testdata)
-    graph01(testdata)
-    graph02(testdata)
+    per(data)
+    eps(data)
+    graph01(data)
+    graph02(data)
+    
     a = total(score_df)
-    return a
+    listt = []
+    for i in range(6):
+        listt.append(a['종목명'][i])
+        
+
+    b = data[data["종목명"].isin(listt)].copy()
+    sorterIndex = dict(zip(listt, range(len(listt))))
+    b['sorter'] = b['종목명'].map(sorterIndex)
+    b.sort_values('sorter',inplace=True)
+    b.drop('sorter', 1, inplace = True)
+    
+    b = b.reset_index()
+    b.drop('index', 1, inplace = True)
+    
+    a = b['종목명'][0]
+    
+    return a, b
 
