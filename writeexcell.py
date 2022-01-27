@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[114]:
+# In[1]:
 
 
 import os
@@ -10,7 +10,7 @@ from openpyxl.drawing.image import Image
 from openpyxl.styles import Alignment
 from openpyxl.styles import Font
 from openpyxl.styles import Border, Side
-import os
+from datetime import datetime
 import pandas as pd
 
 
@@ -93,7 +93,7 @@ def savepng(kospi, kospi200, kosdaq, thema):
     ws.merge_cells(start_column = 2, end_column = 7, start_row = 4,end_row = 4)
     ws.merge_cells(start_column = 2, end_column = 7, start_row = 5,end_row = 5)
     
-    ws.cell(column = 2, row = 3).value = "=TODAY()"
+    ws.cell(column = 2, row = 3).value = datetime.today()
     ws.cell(column = 2, row = 3).alignment = Alignment(horizontal = 'center')
     ws.cell(column = 2, row = 4).value = "5조"
     ws.cell(column = 2, row = 4).alignment = Alignment(horizontal = 'center')
